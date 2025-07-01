@@ -25,6 +25,7 @@ Route::middleware("auth")->group(function (){
     Route::get("/jurusans", [JurusanController::class, "search"]);
 
     Route::post("/gedung", [GedungController::class, "create"]);
+    Route::delete("/gedung/{id}", [GedungController::class, "delete"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

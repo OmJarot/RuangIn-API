@@ -13,7 +13,7 @@ class JurusanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->level == "admin";
+        return $user->level == "admin" || $user->level == "user";
     }
 
     /**

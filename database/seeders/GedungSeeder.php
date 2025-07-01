@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Gedung;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,8 @@ class GedungSeeder extends Seeder
      */
     public function run(): void
     {
-
+        Gedung::create([
+            "name" => "Gedung A"
+        ]);
     }
 }
