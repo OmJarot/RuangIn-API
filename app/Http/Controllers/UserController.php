@@ -105,7 +105,25 @@ class UserController extends Controller
                 ]
             ])->setStatusCode(404));
         }
-        $this->authorize("view", $user);
+        $this->authorize("delete", $user);
         return new UserResource($user);
+    }
+
+    public function delete(string $id): JsonResponse {
+        $user = User::find($id);
+        if (!$user){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "User $id not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        $this->authorize("delete", $user);
+        $user->delete();
+        return response()->json([
+            "data" => true
+        ])->setStatusCode(200);
     }
 }

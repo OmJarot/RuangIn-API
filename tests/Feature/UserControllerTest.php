@@ -229,7 +229,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->delete("/api/users/2023")
+            ->get("/api/users/2023")
             ->assertStatus(200)
             ->assertJson([
                 "data" => [
@@ -246,6 +246,37 @@ class UserControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
+            ->get("/api/users/321")
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "User 321 not found"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testDeleteSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->delete("/api/users/2023")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => "true"
+            ]);
+
+        $user = User::find("2023");
+        self::assertNull($user);
+    }
+
+    public function testDeleteNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
             ->delete("/api/users/321")
             ->assertStatus(404)
             ->assertJson([
@@ -256,4 +287,15 @@ class UserControllerTest extends TestCase
                 ]
             ]);
     }
+
+    public function testDeleteForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->delete("/api/users/2023")
+            ->assertStatus(403);
+    }
+
+
 }
