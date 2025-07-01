@@ -40,13 +40,13 @@ class GedungController extends Controller
     }
 
     public function getAll(): GedungCollection {
-        $this->authorize("viewAny", Gedung::class);
+        $this->authorize("create", Gedung::class);
         $gedung = Gedung::query()->get();
         return new GedungCollection($gedung);
     }
 
     public function getAllOn(): GedungCollection {
-        $this->authorize("create", Gedung::class);
+        $this->authorize("viewAny", Gedung::class);
         $gedung = Gedung::query()->where("status", "=", "on")->get();
         return new GedungCollection($gedung);
     }

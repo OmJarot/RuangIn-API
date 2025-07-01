@@ -26,6 +26,10 @@ Route::middleware("auth")->group(function (){
 
     Route::post("/gedung", [GedungController::class, "create"]);
     Route::delete("/gedung/{id}", [GedungController::class, "delete"]);
+    Route::get("/gedung", [GedungController::class, "getAll"]);
+    Route::get("/gedung/on", [GedungController::class, "getAllOn"]);
+    Route::put("/gedung/status/{id}", [GedungController::class, "switchStatus"]);
+    Route::put("/gedung/{id}", [GedungController::class, "update"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

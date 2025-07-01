@@ -98,5 +98,97 @@ class GedungControllerTest extends TestCase
 
     }
 
+    public function testGetAll(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertCount(1, $response["data"]);
+    }
+
+    public function testGetAllForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->get("/api/gedung")
+            ->assertStatus(403);
+    }
+
+    public function testGetAllOn(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/on")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertCount(0, $response["data"]);
+    }
+
+    public function testSwitchStatus(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+
+        $gedung = Gedung::query()->first();
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->put("/api/gedung/status/$gedung->id")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+        $gedung = Gedung::query()->first();
+        self::assertEquals("on", $gedung->status);
+    }
+
+    public function testUpdate(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+        $gedung = Gedung::query()->first();
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->put("/api/gedung/$gedung->id", ["name" => "Gedung B"])
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "name" => "Gedung B"
+                ]
+            ]);
+        $gedung = Gedung::query()->first();
+        self::assertEquals("Gedung B", $gedung->name);
+    }
+
+    public function testUpdateValidationError(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+        $gedung = Gedung::query()->first();
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->put("/api/gedung/$gedung->id")
+            ->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "name" => [
+                        "The name field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class]);
+        $gedung = Gedung::query()->first();
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->put("/api/gedung/$gedung->id")
+            ->assertStatus(403);
+    }
+
 
 }
