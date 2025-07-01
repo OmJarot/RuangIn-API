@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Gedung extends Model
+class Ruangan extends Model
 {
-    protected $table = "gedungs";
+    protected $table = "ruangans";
     protected $primaryKey = "id";
     protected $keyType = "int";
     public $incrementing = true;
@@ -15,6 +15,7 @@ class Gedung extends Model
 
     protected $fillable = [
         "name",
+        "gedung_id",
         "status"
     ];
 
@@ -22,8 +23,7 @@ class Gedung extends Model
         'status' => 'off',
     ];
 
-    public function ruangan(): HasMany {
-        return $this->hasMany(Ruangan::class, "gedung_id", "id");
+    function gedung():BelongsTo {
+        return $this->belongsTo(Gedung::class, "gedung_id", "id");
     }
-
 }
