@@ -93,4 +93,19 @@ class UserController extends Controller
             'message' => 'Logout success.'
         ]);
     }
+
+    public function get(string $id): UserResource {
+        $user = User::find($id);
+        if (!$user){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "User $id not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        $this->authorize("view", $user);
+        return new UserResource($user);
+    }
 }

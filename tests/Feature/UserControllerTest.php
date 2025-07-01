@@ -222,8 +222,38 @@ class UserControllerTest extends TestCase
             ->assertJson([
                 'message' => 'Logout success.'
             ]);
-
     }
 
+    public function testGetSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
 
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->delete("/api/users/2023")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "2023",
+                    "name" => "piter",
+                    "jurusan" => "tpl",
+                    "level" => "user"
+                ]
+            ]);
+    }
+
+    public function testGetNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->delete("/api/users/321")
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "User 321 not found"
+                    ]
+                ]
+            ]);
+    }
 }
