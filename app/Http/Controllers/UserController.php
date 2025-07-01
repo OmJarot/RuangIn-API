@@ -107,7 +107,7 @@ class UserController extends Controller
                 ]
             ])->setStatusCode(404));
         }
-        $this->authorize("delete", $user);
+        $this->authorize("view", $user);
         return new UserResource($user);
     }
 

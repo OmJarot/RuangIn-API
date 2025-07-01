@@ -132,6 +132,9 @@ class RuanganControllerTest extends TestCase
             ->assertJson([
                 "data" => "true"
             ]);
+
+        $ruangan = Ruangan::find($ruangan->id);
+        self::assertNull($ruangan);
     }
 
     public function testDeleteRuanganNotFound(): void {
@@ -179,6 +182,66 @@ class RuanganControllerTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function testSwitch(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
 
+        $gedung = Gedung::first();
+        $ruangan = Ruangan::first();
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->patch("/api/gedung/$gedung->id/ruangan/$ruangan->id")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+        $ruangan = Ruangan::first();
+        self::assertEquals("on", $ruangan->status);
+    }
+
+    public function testSwitchRuanganNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
+
+        $gedung = Gedung::first();
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->patch("/api/gedung/$gedung->id/ruangan/salah")
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testSwitchGedungNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->patch("/api/gedung/salah/ruangan/salah")
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ]);
+    }
+    public function testSwitchForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
+
+        $gedung = Gedung::first();
+        $ruangan = Ruangan::first();
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->patch("/api/gedung/$gedung->id/ruangan/$ruangan->id")
+            ->assertStatus(403);
+    }
 
 }

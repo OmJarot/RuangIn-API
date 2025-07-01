@@ -156,7 +156,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->post("/api/users/update-password",[
+            ->patch("/api/users/update-password",[
                 "oldPassword" => "piter",
                 "newPassword" => "update",
                 "retypePassword" => "update"
@@ -174,7 +174,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->post("/api/users/update-password",[
+            ->patch("/api/users/update-password",[
                 "oldPassword" => "",
                 "newPassword" => "salah",
                 "retypePassword" => "update"
@@ -196,7 +196,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->post("/api/users/update-password",[
+            ->patch("/api/users/update-password",[
                 "oldPassword" => "salah",
                 "newPassword" => "update",
                 "retypePassword" => "update"
@@ -303,7 +303,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
-            ->post("/api/users/2023", [
+            ->put("/api/users/2023", [
                 "name" => "update",
                 "password" => "update",
                 "jurusan_id" => "admin"
@@ -326,7 +326,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
-            ->post("/api/users/2023", [
+            ->put("/api/users/2023", [
                 "name" => "",
                 "password" => "",
                 "jurusan_id" => ""
@@ -351,7 +351,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
-            ->post("/api/users/23", [
+            ->put("/api/users/23", [
                 "name" => "test",
                 "password" => "test",
                 "jurusan_id" => "test"
@@ -369,7 +369,7 @@ class UserControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->post("/api/users/2023", [
+            ->put("/api/users/2023", [
                 "name" => "test",
                 "password" => "test",
                 "jurusan_id" => "test"
@@ -379,7 +379,7 @@ class UserControllerTest extends TestCase
     public function testSearch(): void {
         $this->seed([JurusanSeeder::class, UserSearchSeeder::class]);
 
-        $user = User::find("2023");
+        $user = User::find("admin");
         $response = $this->actingAs($user)
             ->get("/api/users")
             ->assertStatus(200)

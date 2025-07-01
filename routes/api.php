@@ -13,11 +13,11 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware("auth")->group(function (){
     Route::post("/users", [UserController::class, "create"]);
-    Route::post("/users/update-password", [UserController::class, "updatePassword"]);
+    Route::patch("/users/update-password", [UserController::class, "updatePassword"]);
     Route::delete("/users/logout", [UserController::class, "logout"]);
     Route::get("/users/{id}", [UserController::class, "get"]);
     Route::delete("/users/{id}", [UserController::class, "delete"]);
-    Route::post("/users/{id}", [UserController::class, "update"]);
+    Route::put("/users/{id}", [UserController::class, "update"]);
     Route::get("/users", [UserController::class, "search"]);
 
     Route::post("/jurusans", [JurusanController::class, "create"]);
@@ -29,12 +29,13 @@ Route::middleware("auth")->group(function (){
     Route::delete("/gedung/{id}", [GedungController::class, "delete"]);
     Route::get("/gedung", [GedungController::class, "getAll"]);
     Route::get("/gedung/on", [GedungController::class, "getAllOn"]);
-    Route::put("/gedung/status/{id}", [GedungController::class, "switchStatus"]);
-    Route::put("/gedung/{id}", [GedungController::class, "update"]);
+    Route::patch("/gedung/status/{id}", [GedungController::class, "switchStatus"]);
+    Route::patch("/gedung/{id}", [GedungController::class, "update"]);
 
     Route::post("/gedung/{id}/ruangan", [RuanganController::class, "create"]);
     Route::get("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "get"]);
     Route::delete("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "delete"]);
+    Route::patch("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "switchStatus"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

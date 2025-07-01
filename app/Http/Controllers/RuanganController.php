@@ -27,7 +27,7 @@ class RuanganController extends Controller
         }
         $data = $request->validated();
 
-        $ruangan = $gedung->ruangan()->create($data);
+        $ruangan = $gedung->ruangan()->updateOrCreate($data);
         return new RuanganResource($ruangan);
     }
 
@@ -44,6 +44,19 @@ class RuanganController extends Controller
 
         $this->authorize("delete", $ruangan);
         $ruangan->delete();
+        return response()->json([
+            "data" => true
+        ])->setStatusCode(200);
+    }
+
+    public function switchStatus(string $gedungId, string $ruanganId): JsonResponse {
+        $gedung = $this->getGedung($gedungId);
+        $ruangan = $this->getRuangan($gedung, $ruanganId);
+
+        $this->authorize("update", $ruangan);
+        $ruangan->status = ($gedung->status == "on") ? "off" : "on";
+        $ruangan->save();
+
         return response()->json([
             "data" => true
         ])->setStatusCode(200);

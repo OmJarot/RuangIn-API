@@ -137,7 +137,7 @@ class GedungControllerTest extends TestCase
         $gedung = Gedung::query()->first();
         $user = User::find("admin");
         $this->actingAs($user)
-            ->put("/api/gedung/status/$gedung->id")
+            ->patch("/api/gedung/status/$gedung->id")
             ->assertStatus(200)
             ->assertJson([
                 "data" => true
@@ -152,7 +152,7 @@ class GedungControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
-            ->put("/api/gedung/$gedung->id", ["name" => "Gedung B"])
+            ->patch("/api/gedung/$gedung->id", ["name" => "Gedung B"])
             ->assertStatus(200)
             ->assertJson([
                 "data" => [
@@ -169,7 +169,7 @@ class GedungControllerTest extends TestCase
 
         $user = User::find("admin");
         $this->actingAs($user)
-            ->put("/api/gedung/$gedung->id")
+            ->patch("/api/gedung/$gedung->id")
             ->assertStatus(400)
             ->assertJson([
                 "errors" => [
@@ -186,7 +186,7 @@ class GedungControllerTest extends TestCase
 
         $user = User::find("2023");
         $this->actingAs($user)
-            ->put("/api/gedung/$gedung->id")
+            ->patch("/api/gedung/$gedung->id")
             ->assertStatus(403);
     }
 
