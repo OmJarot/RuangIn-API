@@ -6,6 +6,7 @@ use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -145,5 +146,36 @@ class UserController extends Controller
         $user->password = Hash::make($data["password"]);
         $user->save();
         return new UserResource($user);
+    }
+
+    public function search(Request $request): UserCollection {
+        $this->authorize("viewAny", User::class);
+
+        $page = $request->input("page", 1);
+        $size = $request->input("size", 10);
+
+        $query = User::query();
+
+        if ($name = $request->query("name")) {
+            $query->where("name", "like", "%$name%");
+        }
+
+        $jurusan = $request->query("jurusan");
+        $angkatan = $request->query("angkatan");
+
+        if ($jurusan || $angkatan) {
+            $query->whereHas("jurusan", function ($bJurusan) use ($jurusan, $angkatan) {
+                if ($jurusan) {
+                    $bJurusan->where("jurusans.name", "=", $jurusan);
+                }
+                if ($angkatan) {
+                    $bJurusan->where("jurusans.angkatan", "=", $angkatan);
+                }
+            });
+        }
+
+        $users = $query->paginate(perPage: $size, page: $page);
+
+        return new UserCollection($users);
     }
 }
