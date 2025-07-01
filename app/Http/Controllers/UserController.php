@@ -85,4 +85,12 @@ class UserController extends Controller
             ])->setStatusCode(400));
         }
     }
+
+    public function logout(Request $request): JsonResponse {
+        Auth::logout();
+
+        return response()->json([
+            'message' => 'Logout success.'
+        ]);
+    }
 }

@@ -212,5 +212,18 @@ class UserControllerTest extends TestCase
         self::assertTrue(Hash::check("piter", $user->password));
     }
 
+    public function testLogoutSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->delete("/api/users/logout")
+            ->assertStatus(200)
+            ->assertJson([
+                'message' => 'Logout success.'
+            ]);
+
+    }
+
 
 }
