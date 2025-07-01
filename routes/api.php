@@ -10,6 +10,7 @@ Route::get('/user', function (Request $request) {
 
 Route::middleware("auth:sanctum")->group(function (){
     Route::post("/users", [UserController::class, "create"]);
+    Route::post("/users/update-password", [UserController::class, "updatePassword"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

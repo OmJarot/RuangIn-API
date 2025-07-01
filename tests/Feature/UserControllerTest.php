@@ -8,6 +8,7 @@ use Database\Seeders\UserSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class UserControllerTest extends TestCase
@@ -147,6 +148,68 @@ class UserControllerTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testUpdatePasswordSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->post("/api/users/update-password",[
+                "oldPassword" => "piter",
+                "newPassword" => "update",
+                "retypePassword" => "update"
+            ])->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+
+        $user = User::find("2023");
+        self::assertTrue(Hash::check("update", $user->password));
+    }
+
+    public function testUpdatePasswordValidationError(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->post("/api/users/update-password",[
+                "oldPassword" => "",
+                "newPassword" => "salah",
+                "retypePassword" => "update"
+            ])->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "oldPassword" => [
+                        "The old password field is required."
+                    ],
+                    "retypePassword" => [
+                        "The retype password field must match new password."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdatePasswordOldPasswordWrong(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->post("/api/users/update-password",[
+                "oldPassword" => "salah",
+                "newPassword" => "update",
+                "retypePassword" => "update"
+            ])->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Old password is wrong"
+                    ]
+                ]
+            ]);
+
+        $user = User::find("2023");
+        self::assertTrue(Hash::check("piter", $user->password));
     }
 
 

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
+use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -59,6 +62,27 @@ class UserController extends Controller
                 ]
             ])->setStatusCode(400));
         }
+    }
 
+    public function updatePassword(UpdatePasswordRequest $request): JsonResponse {
+        $user = Auth::user();
+        $this->authorize("update", $user);
+
+        $data = $request->validated();
+        if (Hash::check($data["oldPassword"], $user->password)){
+            $user->password = Hash::make($data["newPassword"]);
+            $user->save();
+            return response()->json([
+                "data" => true
+            ])->setStatusCode(200);
+        }else{
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Old password is wrong"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
     }
 }

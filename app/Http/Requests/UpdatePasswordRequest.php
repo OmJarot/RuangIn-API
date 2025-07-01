@@ -6,14 +6,14 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CreateUserRequest extends FormRequest
+class UpdatePasswordRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->level == "admin";
+        return $this->user() != null;
     }
 
     /**
@@ -24,10 +24,9 @@ class CreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "id" => ["required", "max:20"],
-            "name" => ["required", "max:200"],
-            "jurusan_id" => ["required", "max:100"],
-            "password" => ["required", "max:100"]
+            "oldPassword" => ["required", "max:100"],
+            "newPassword" => ["required", "max:100"],
+            "retypePassword" => ["required", "max:100", "same:newPassword"]
         ];
     }
 
