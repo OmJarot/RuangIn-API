@@ -13,7 +13,8 @@ class CreateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->level == "admin";
+//        return $this->user()->level == "admin";
+        return true;
     }
 
     /**
@@ -27,7 +28,7 @@ class CreateUserRequest extends FormRequest
             "id" => ["required", "max:20"],
             "name" => ["required", "max:200"],
             "jurusan_id" => ["required", "max:100"],
-            "password" => ["required", "max:200"]
+            "password" => ["required", "max:100"]
         ];
     }
 

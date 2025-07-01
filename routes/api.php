@@ -8,6 +8,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::middleware("auth")->group(function (){
-    Route::post("/users", [UserController::class]);
+Route::middleware("auth:sanctum")->group(function (){
+    Route::post("/users", [UserController::class, "create"]);
 });
+
+Route::post("/users/login", [UserController::class, "login"]);
