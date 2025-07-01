@@ -1,0 +1,229 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User API",
+        "description": "User API",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ],
+    "paths": {
+        "/api/users" : {
+            "post" : {
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in" : "header"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Create New User",
+                    "content": {
+                        "application/json" : {
+                            "schema": {
+                                "required": ["nim","name","jurusan","password"],
+                                "type": "object",
+                                "properties": {
+                                    "nim" : {
+                                        "type": "string"
+                                    },
+                                    "name" : {
+                                        "type": "string"
+                                    },
+                                    "jurusan_id" : {
+                                        "type": "string"
+                                    },
+                                    "password" : {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "examples": {
+                                "piter" : {
+                                    "summary": "Create user piter",
+                                    "value": {
+                                        "nim" : "2023123",
+                                        "name" : "piter",
+                                        "jurusan_id" : "tpl 2023",
+                                        "password" : "rahasia"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success create new user",
+                        "content": {
+                            "application/json" : {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "nim" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "jurusan" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "errors" : {
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "piter" : {
+                                        "summary": "response success",
+                                        "value": {
+                                            "data" : {
+                                                "nim" : "2023123",
+                                                "name" : "piter",
+                                                "jurusan_id" : "tpl 2023"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json" : {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "nim" : {
+                                                    "type": "array"
+                                                },
+                                                "name" : {
+                                                    "type": "array"
+                                                },
+                                                "jurusan" : {
+                                                    "type": "array"
+                                                },
+                                                "password" : {
+                                                    "type": "array"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "error" : {
+                                        "description": "Validation error example",
+                                        "value": {
+                                            "nim" : [
+                                                "nim must not be blank",
+                                                "nim min 6 character"
+                                            ],
+                                            "name" : [
+                                                "name must not be blank",
+                                                "name min 6 character"
+                                            ],
+                                            "jurusan" : [
+                                                "jurusan must not blank"
+                                            ],
+                                            "password" : [
+                                                "password must not be blank",
+                                                "password min 6 character"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/login" : {
+            "post" : {
+                "description": "Login User",
+                "requestBody": {
+                    "content": {
+                        "application/json" : {
+                            "schema": {
+                                "required": ["nim", "password"],
+                                "type": "object",
+                                "properties": {
+                                    "nim" : {
+                                        "type": "string"
+                                    },
+                                    "password" : {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200" : {
+                        "description": "Success login",
+                        "content": {
+                            "application/json" : {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "nim" : {
+                                                    "type": "string"
+                                                },
+                                                "name" : {
+                                                    "type": "string"
+                                                },
+                                                "jurusan_id" : {
+                                                    "type": "string"
+                                                },
+                                                "token" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400" : {
+                        "description": "Invalid",
+                        "content": {
+                            "application/json" : {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "errors" : {
+                                            "type": "object",
+                                            "properties": {
+                                                "message" : {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
