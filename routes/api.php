@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,11 @@ Route::middleware("auth")->group(function (){
     Route::delete("/users/{id}", [UserController::class, "delete"]);
     Route::post("/users/{id}", [UserController::class, "update"]);
     Route::get("/users", [UserController::class, "search"]);
+
+    Route::post("/jurusans", [JurusanController::class, "create"]);
+    Route::get("/jurusans/{id}", [JurusanController::class, "get"]);
+    Route::delete("/jurusans/{id}", [JurusanController::class, "delete"]);
+    Route::get("/jurusans", [JurusanController::class, "search"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Models\Jurusan;
 use App\Models\User;
+use App\Policies\JurusanPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Support\Facades\Gate;
@@ -24,5 +26,6 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::policy(User::class, UserPolicy::class);
+        Gate::policy(Jurusan::class, JurusanPolicy::class);
     }
 }
