@@ -36,6 +36,7 @@ Route::middleware("auth")->group(function (){
     Route::get("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "get"]);
     Route::delete("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "delete"]);
     Route::patch("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "switchStatus"]);
+    Route::get("/gedung/{gedungId}/ruangan", [RuanganController::class, "search"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

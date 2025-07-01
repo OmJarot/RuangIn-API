@@ -7,6 +7,7 @@ use App\Models\Ruangan;
 use App\Models\User;
 use Database\Seeders\GedungSeeder;
 use Database\Seeders\JurusanSeeder;
+use Database\Seeders\RuanganSearchSeed;
 use Database\Seeders\RuanganSeeder;
 use Database\Seeders\UserSearchSeeder;
 use Database\Seeders\UserSeeder;
@@ -243,5 +244,77 @@ class RuanganControllerTest extends TestCase
             ->patch("/api/gedung/$gedung->id/ruangan/$ruangan->id")
             ->assertStatus(403);
     }
+
+    public function testSearch(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSearchSeed::class]);
+
+        $gedung = Gedung::first();
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/$gedung->id/ruangan")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchByName(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSearchSeed::class]);
+
+        $gedung = Gedung::first();
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/$gedung->id/ruangan?name=Ruang")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchByStatus(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSearchSeed::class]);
+
+        $gedung = Gedung::first();
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/$gedung->id/ruangan?status=off")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(10, count($response["data"]));
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testSearchByPage(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSearchSeed::class]);
+
+        $gedung = Gedung::first();
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/$gedung->id/ruangan?size=5&page=2")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(5, count($response["data"]));
+        self::assertEquals(2, $response["meta"]["current_page"]);
+        self::assertEquals(10, $response["meta"]["total"]);
+    }
+
+    public function testNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSearchSeed::class]);
+
+        $gedung = Gedung::first();
+        $user = User::find("admin");
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/$gedung->id/ruangan?name=tidakada")
+            ->assertStatus(200)
+            ->json();
+
+        self::assertEquals(0, count($response["data"]));
+        self::assertEquals(0, $response["meta"]["total"]);
+    }
+
 
 }
