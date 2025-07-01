@@ -29,7 +29,7 @@ class RuanganPolicy
      */
     public function create(User $user): bool
     {
-        return $user->levle == "admin";
+        return $user->level == "admin";
     }
 
     /**

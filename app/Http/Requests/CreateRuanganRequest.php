@@ -11,7 +11,7 @@ class CreateRuanganRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->level == "admin";
     }
 
     /**
@@ -22,7 +22,7 @@ class CreateRuanganRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            "name" => ["required", "max:100"],
         ];
     }
 }

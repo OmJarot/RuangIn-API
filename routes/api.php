@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GedungController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +31,10 @@ Route::middleware("auth")->group(function (){
     Route::get("/gedung/on", [GedungController::class, "getAllOn"]);
     Route::put("/gedung/status/{id}", [GedungController::class, "switchStatus"]);
     Route::put("/gedung/{id}", [GedungController::class, "update"]);
+
+    Route::post("/gedung/{id}/ruangan", [RuanganController::class, "create"]);
+    Route::get("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "get"]);
+    Route::delete("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "delete"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

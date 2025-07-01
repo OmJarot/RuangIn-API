@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string("status", 50)->nullable(false)->default("off");
             $table->unsignedBigInteger("gedung_id")->nullable(false);
             $table->foreign("gedung_id")->on("gedungs")->references("id");
+            $table->softDeletes();
         });
     }
 

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp("end")->nullable(false);
             $table->foreign("user_id")->on("users")->references("id");
             $table->foreign("ruangan_id")->on("ruangans")->references("id");
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -4,6 +4,6 @@ use ruangin;
 show tables;
 
 select * from users;
-select * from requests;
+select * from gedungs;
 
 drop table requests;
