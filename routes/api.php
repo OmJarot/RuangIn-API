@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GedungController;
 use App\Http\Controllers\JurusanController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ Route::middleware("auth")->group(function (){
     Route::get("/jurusans/{id}", [JurusanController::class, "get"]);
     Route::delete("/jurusans/{id}", [JurusanController::class, "delete"]);
     Route::get("/jurusans", [JurusanController::class, "search"]);
+
+    Route::post("/gedung", [GedungController::class, "create"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);
