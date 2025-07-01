@@ -297,5 +297,83 @@ class UserControllerTest extends TestCase
             ->assertStatus(403);
     }
 
+    public function testUpdateUserSuccess(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->post("/api/users/2023", [
+                "name" => "update",
+                "password" => "update",
+                "jurusan_id" => "admin"
+            ])->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    "id" => "2023",
+                    "name" => "update",
+                    "jurusan" => "admin",
+                    "level" => "user"
+                ]
+            ]);
+
+        $user = User::find("2023");
+        self::assertTrue(Hash::check("update", $user->password));
+    }
+
+    public function testUpdateUserValidationError() {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->post("/api/users/2023", [
+                "name" => "",
+                "password" => "",
+                "jurusan_id" => ""
+            ])->assertStatus(400)
+            ->assertJson([
+                "errors" => [
+                    "name" => [
+                        "The name field is required."
+                    ],
+                    "jurusan_id" => [
+                        "The jurusan id field is required."
+                    ],
+                    "password" => [
+                        "The password field is required."
+                    ]
+                ]
+            ]);
+    }
+
+    public function testUpdateUserNotFound() {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("admin");
+        $this->actingAs($user)
+            ->post("/api/users/23", [
+                "name" => "test",
+                "password" => "test",
+                "jurusan_id" => "test"
+            ])->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "User 23 not found"
+                    ]
+                ]
+            ]);
+    }
+    public function testUpdateUserForbidden() {
+        $this->seed([JurusanSeeder::class, UserSeeder::class]);
+
+        $user = User::find("2023");
+        $this->actingAs($user)
+            ->post("/api/users/2023", [
+                "name" => "test",
+                "password" => "test",
+                "jurusan_id" => "test"
+            ])->assertStatus(403);
+    }
+
 
 }

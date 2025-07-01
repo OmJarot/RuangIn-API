@@ -14,6 +14,7 @@ Route::middleware("auth")->group(function (){
     Route::delete("/users/logout", [UserController::class, "logout"]);
     Route::get("/users/{id}", [UserController::class, "get"]);
     Route::delete("/users/{id}", [UserController::class, "delete"]);
+    Route::post("/users/{id}", [UserController::class, "update"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

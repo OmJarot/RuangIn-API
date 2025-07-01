@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\UpdatePasswordRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -20,7 +21,7 @@ class UserController extends Controller
 {
     public function create(CreateUserRequest $request): UserResource {
         $user = Auth::user();
-        $this->authorize("create", $user);
+        $this->authorize("create", User::class);
 
         $data = $request->validated();
 
@@ -125,5 +126,24 @@ class UserController extends Controller
         return response()->json([
             "data" => true
         ])->setStatusCode(200);
+    }
+
+    public function update(string $id, UpdateUserRequest $request): UserResource {
+        $this->authorize("create", User::class);
+        $data = $request->validated();
+        $user = User::find($id);
+        if (!$user){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "User $id not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        $user->fill($data);
+        $user->password = Hash::make($data["password"]);
+        $user->save();
+        return new UserResource($user);
     }
 }
