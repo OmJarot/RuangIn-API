@@ -16,7 +16,7 @@ class RequestSeeder extends Seeder
     public function run(): void
     {
         $ruangan = Ruangan::first();
-        $user = User::first();
+        $user = User::find("2023");
         Request::create([
             "user_id" => $user->id,
             "ruangan_id" => $ruangan->id,

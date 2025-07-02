@@ -39,7 +39,8 @@ Route::middleware("auth")->group(function (){
     Route::patch("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "switchStatus"]);
     Route::get("/gedung/{gedungId}/ruangan", [RuanganController::class, "search"]);
 
-    Route::post("/gedung/{gedungId}/ruangan/{ruangId}/request", [RequestController::class, "request"]);
+    Route::post("/gedung/{gedungId}/ruangan/{ruangId}/request", [RequestController::class, "create"]);
+    Route::get("/request", [RequestController::class, "getMy"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

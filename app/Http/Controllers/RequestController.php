@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRequestRequest;
+use App\Http\Resources\RequestCollection;
 use App\Http\Resources\RequestResource;
 use App\Models\Gedung;
 use App\Models\Ruangan;
+use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
 use \App\Models\Request as Req;
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class RequestController extends Controller
 {
-    public function request(string $gedungId, string $ruangId, CreateRequestRequest $request): RequestResource {
+    public function create(string $gedungId, string $ruangId, CreateRequestRequest $request): RequestResource {
         $this->authorize("create", Req::class);
         $gedung = $this->getGedung($gedungId);
         $ruangan = $this->getRuangan($gedung, $ruangId);
@@ -58,6 +60,22 @@ class RequestController extends Controller
         $request->save();
 
         return new RequestResource($request);
+    }
+
+    public function getMy(Request $request): RequestCollection {
+        $this->authorize("viewAny", Req::class);
+
+        $user = Auth::user();
+        $status = $request->query("status");
+
+        $query = $user->requests();
+        if ($status){
+            $query->where("status", "=", $status);
+        }
+
+        $request = $query->get();
+
+        return new RequestCollection($request);
     }
 
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{

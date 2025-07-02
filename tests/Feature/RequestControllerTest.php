@@ -16,7 +16,7 @@ use Tests\TestCase;
 
 class RequestControllerTest extends TestCase
 {
-    public function testRequestSuccess(): void {
+    public function testCreateSuccess(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
 
         $user = User::find("2023");
@@ -56,7 +56,7 @@ class RequestControllerTest extends TestCase
         self::assertEquals("waiting", $request->status);
     }
 
-    public function testRequestValidationError(): void {
+    public function testCreateValidationError(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class]);
 
         $user = User::find("2023");
@@ -92,7 +92,7 @@ class RequestControllerTest extends TestCase
             ]);
     }
 
-    public function testRequestBentrok(): void {
+    public function testCreateBentrok(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
 
         $user = User::find("2023");
@@ -116,7 +116,7 @@ class RequestControllerTest extends TestCase
             ]);
     }
 
-    public function testDateNotValid(): void {
+    public function testCreateDateNotValid(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
 
         $user = User::find("2023");
@@ -155,7 +155,54 @@ class RequestControllerTest extends TestCase
                 "start" => "16:01",
                 "end" => "16:49"
             ])->assertStatus(403);
+    }
 
+    public function testGetMy(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $ruangan = Ruangan::first();
+        $this->actingAs($user)
+            ->get("/api/request")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "user_id" => $user->id,
+                        "ruangan_id" => $ruangan->id,
+                        "title" => "title test",
+                        "description" => "description test",
+                        "date" => "2025-07-03",
+                        "start" => "16:00:00",
+                        "end" => "17:00:00",
+                        "status" => "accept"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testGetMyByStatus(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $ruangan = Ruangan::first();
+        $this->actingAs($user)
+            ->get("/api/request?status=accept")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "user_id" => $user->id,
+                        "ruangan_id" => $ruangan->id,
+                        "title" => "title test",
+                        "description" => "description test",
+                        "date" => "2025-07-03",
+                        "start" => "16:00:00",
+                        "end" => "17:00:00",
+                        "status" => "accept"
+                    ]
+                ]
+            ]);
     }
 
 
