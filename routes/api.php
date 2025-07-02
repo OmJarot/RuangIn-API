@@ -44,6 +44,7 @@ Route::middleware("auth")->group(function (){
     Route::get("/request/{id}", [RequestController::class, "getMy"]);
     Route::get("/request", [RequestController::class, "search"]);
     Route::put("/request/{id}", [RequestController::class, "update"]);
+    Route::delete("/request/{id}", [RequestController::class, "delete"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

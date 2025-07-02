@@ -568,5 +568,47 @@ class RequestControllerTest extends TestCase
         self::assertEquals(1, $response["meta"]["total"]);
     }
 
+    public function testDelete(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("admin");
+        $request = Request::first();
+
+        $this->actingAs($user)
+            ->delete("/api/request/$request->id")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+    }
+
+    public function testDeleteNotFound(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("admin");
+
+        $this->actingAs($user)
+            ->delete("/api/request/notfound")
+            ->assertStatus(404)
+            ->assertJson([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ]);
+    }
+
+    public function testDeleteForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $request = Request::first();
+
+        $this->actingAs($user)
+            ->delete("/api/request/$request->id")
+            ->assertStatus(403);
+    }
+
 
 }

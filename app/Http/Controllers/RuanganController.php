@@ -89,13 +89,7 @@ class RuanganController extends Controller
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{
         $ruangan = $gedung->ruangan()->find($ruanganId);
         if (!$ruangan){
-            throw new HttpResponseException(response()->json([
-                "errors" => [
-                    "message" => [
-                        "Not found"
-                    ]
-                ]
-            ])->setStatusCode(404));
+            $this->notFound();
         }
         return $ruangan;
     }
@@ -103,15 +97,19 @@ class RuanganController extends Controller
     private function getGedung(string $gedungId): Gedung {
         $gedung = Gedung::find($gedungId);
         if (!$gedung){
-            throw new HttpResponseException(response()->json([
-                "errors" => [
-                    "message" => [
-                        "Not found"
-                    ]
-                ]
-            ])->setStatusCode(404));
+            $this->notFound();
         }
         return $gedung;
+    }
+
+    private function notFound() {
+        throw new HttpResponseException(response()->json([
+            "errors" => [
+                "message" => [
+                    "Not found"
+                ]
+            ]
+        ])->setStatusCode(404));
     }
 
 }

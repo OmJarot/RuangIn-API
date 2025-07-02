@@ -10,6 +10,7 @@ use App\Models\Gedung;
 use App\Models\Ruangan;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use \App\Models\Request as Req;
 use Illuminate\Support\Carbon;
@@ -209,16 +210,22 @@ class RequestController extends Controller
         return new RequestCollection($paginated);
     }
 
+    public function delete(string $id): JsonResponse {
+        $request = Req::find($id);
+        if (!$request){
+            $this->notFound();
+        }
+        $this->authorize("delete", $request);
+        $request->delete();
+        return response()->json([
+            "data" => true
+        ]);
+    }
+
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{
         $ruangan = $gedung->ruangan()->find($ruanganId);
         if (!$ruangan){
-            throw new HttpResponseException(response()->json([
-                "errors" => [
-                    "message" => [
-                        "Not found"
-                    ]
-                ]
-            ])->setStatusCode(404));
+            $this->notFound();
         }
         return $ruangan;
     }
@@ -226,14 +233,18 @@ class RequestController extends Controller
     private function getGedung(string $gedungId): Gedung {
         $gedung = Gedung::find($gedungId);
         if (!$gedung){
-            throw new HttpResponseException(response()->json([
-                "errors" => [
-                    "message" => [
-                        "Not found"
-                    ]
-                ]
-            ])->setStatusCode(404));
+            $this->notFound();
         }
         return $gedung;
+    }
+
+    private function notFound() {
+        throw new HttpResponseException(response()->json([
+            "errors" => [
+                "message" => [
+                    "Not found"
+                ]
+            ]
+        ])->setStatusCode(404));
     }
 }
