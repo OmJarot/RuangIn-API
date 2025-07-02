@@ -181,6 +181,34 @@ class RequestController extends Controller
         return new RequestCollection($paginated);
     }
 
+    public function getByRuangan(string $gedungId, string $ruangId, Request $request) {
+        $this->authorize("viewAny", Req::class);
+        $gedung = $this->getGedung($gedungId);
+        $ruangan = $this->getRuangan($gedung, $ruangId);
+
+        $page = $request->input("page", 1);
+        $size = $request->input("size", 10);
+
+        $date = $request->query("date");
+
+        $query = $ruangan->requests()->where("status", "=", "accept");
+
+        if ($date) {
+            try {
+                $date = Carbon::parse($date)->format("Y-m-d");
+            }catch (\Exception){
+                $date = null;
+            }
+            if ($date != null){
+                $query->whereDate("date", "=", $date);
+            }
+        }
+
+        $paginated = $query->paginate(perPage: $size, page: $page);
+
+        return new RequestCollection($paginated);
+    }
+
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{
         $ruangan = $gedung->ruangan()->find($ruanganId);
         if (!$ruangan){

@@ -26,11 +26,11 @@ class Ruangan extends Model
         'status' => 'off',
     ];
 
-    function gedung():BelongsTo {
+    public function gedung():BelongsTo {
         return $this->belongsTo(Gedung::class, "gedung_id", "id");
     }
 
-    function requests(): HasMany {
+    public function requests(): HasMany {
         return $this->hasMany(Request::class, "ruangan_id", "id");
     }
 }

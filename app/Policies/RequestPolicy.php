@@ -13,7 +13,7 @@ class RequestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->level == "admin";
+        return true;
     }
 
     /**

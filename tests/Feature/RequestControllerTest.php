@@ -512,5 +512,61 @@ class RequestControllerTest extends TestCase
             ]);
     }
 
+    public function testGetByRuangan(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $ruangan = Ruangan::first();
+
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/" . $ruangan->gedung->id . "/ruangan/" . $ruangan->id . "/request")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "user" => $user->name,
+                        "ruangan" => $ruangan->name,
+                        "title" => "title test",
+                        "description" => "description test",
+                        "date" => "2025-07-03",
+                        "start" => "16:00:00",
+                        "end" => "17:00:00",
+                        "status" => "accept"
+                    ]
+                ]
+            ])->json();
+
+        self::assertEquals(1, count($response["data"]));
+        self::assertEquals(1, $response["meta"]["total"]);
+    }
+
+    public function testGetByRuanganByDate(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $ruangan = Ruangan::first();
+
+        $response = $this->actingAs($user)
+            ->get("/api/gedung/" . $ruangan->gedung->id . "/ruangan/" . $ruangan->id . "/request?date=2025-07-03")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => [
+                    [
+                        "user" => $user->name,
+                        "ruangan" => $ruangan->name,
+                        "title" => "title test",
+                        "description" => "description test",
+                        "date" => "2025-07-03",
+                        "start" => "16:00:00",
+                        "end" => "17:00:00",
+                        "status" => "accept"
+                    ]
+                ]
+            ])->json();
+
+        self::assertEquals(1, count($response["data"]));
+        self::assertEquals(1, $response["meta"]["total"]);
+    }
+
 
 }
