@@ -222,6 +222,32 @@ class RequestController extends Controller
         ]);
     }
 
+    public function accept(string $id): JsonResponse {
+        $request = Req::find($id);
+        if (!$request){
+            $this->notFound();
+        }
+        $this->authorize("restore", $request);
+        $request->status = "accept";
+        $request->save();
+        return response()->json([
+            "data" => true
+        ]);
+    }
+
+    public function reject(string $id): JsonResponse {
+        $request = Req::find($id);
+        if (!$request){
+            $this->notFound();
+        }
+        $this->authorize("restore", $request);
+        $request->status = "reject";
+        $request->save();
+        return response()->json([
+            "data" => true
+        ]);
+    }
+
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{
         $ruangan = $gedung->ruangan()->find($ruanganId);
         if (!$ruangan){

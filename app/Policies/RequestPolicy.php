@@ -45,7 +45,7 @@ class RequestPolicy
      */
     public function delete(User $user, request $request): bool
     {
-        return $user->level == "admin";
+        return $user->level == "admin" || $user->id == $request->user_id;
     }
 
     /**
@@ -53,7 +53,7 @@ class RequestPolicy
      */
     public function restore(User $user, request $request): bool
     {
-        return false;
+        return $user->level == "admin";
     }
 
     /**

@@ -45,6 +45,8 @@ Route::middleware("auth")->group(function (){
     Route::get("/request", [RequestController::class, "search"]);
     Route::put("/request/{id}", [RequestController::class, "update"]);
     Route::delete("/request/{id}", [RequestController::class, "delete"]);
+    Route::put("/request/{id}/accept", [RequestController::class, "accept"]);
+    Route::put("/request/{id}/reject", [RequestController::class, "reject"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

@@ -580,6 +580,9 @@ class RequestControllerTest extends TestCase
             ->assertJson([
                 "data" => true
             ]);
+
+        $req = Request::find($request->id);
+        self::assertNull($req);
     }
 
     public function testDeleteNotFound(): void {
@@ -599,16 +602,63 @@ class RequestControllerTest extends TestCase
             ]);
     }
 
-    public function testDeleteForbidden(): void {
+    public function testAccept(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("admin");
+        $request = Request::first();
+        $request->status = "waiting";
+
+        $this->actingAs($user)
+            ->put("/api/request/$request->id/accept")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+
+        $req = Request::find($request->id);
+        self::assertEquals("accept", $req->status);
+    }
+
+    public function testAcceptForbidden(): void {
         $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
 
         $user = User::find("2023");
         $request = Request::first();
+        $request->status = "waiting";
 
         $this->actingAs($user)
-            ->delete("/api/request/$request->id")
+            ->put("/api/request/$request->id/accept")
             ->assertStatus(403);
     }
 
+    public function testReject(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
 
+        $user = User::find("admin");
+        $request = Request::first();
+        $request->status = "waiting";
+
+        $this->actingAs($user)
+            ->put("/api/request/$request->id/reject")
+            ->assertStatus(200)
+            ->assertJson([
+                "data" => true
+            ]);
+
+        $req = Request::find($request->id);
+        self::assertEquals("reject", $req->status);
+    }
+
+    public function testRejectForbidden(): void {
+        $this->seed([JurusanSeeder::class, UserSeeder::class, GedungSeeder::class, RuanganSeeder::class, RequestSeeder::class]);
+
+        $user = User::find("2023");
+        $request = Request::first();
+        $request->status = "waiting";
+
+        $this->actingAs($user)
+            ->put("/api/request/$request->id/reject")
+            ->assertStatus(403);
+    }
 }
