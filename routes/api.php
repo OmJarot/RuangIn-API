@@ -40,7 +40,9 @@ Route::middleware("auth")->group(function (){
     Route::get("/gedung/{gedungId}/ruangan", [RuanganController::class, "search"]);
 
     Route::post("/gedung/{gedungId}/ruangan/{ruangId}/request", [RequestController::class, "create"]);
-    Route::get("/request", [RequestController::class, "getMy"]);
+    Route::get("/request/{id}", [RequestController::class, "getMy"]);
+    Route::get("/request", [RequestController::class, "search"]);
+    Route::put("/request/{id}", [RequestController::class, "update"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

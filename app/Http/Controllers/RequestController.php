@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateRequestRequest;
+use App\Http\Requests\UpdateRequestRequest;
 use App\Http\Resources\RequestCollection;
 use App\Http\Resources\RequestResource;
 use App\Models\Gedung;
@@ -62,10 +63,70 @@ class RequestController extends Controller
         return new RequestResource($request);
     }
 
-    public function getMy(Request $request): RequestCollection {
-        $this->authorize("viewAny", Req::class);
+    public function update(string $id, UpdateRequestRequest $request): RequestResource {
+        $db = Req::find($id);
+        if (!$db || $db->status != "waiting"){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
 
-        $user = Auth::user();
+        $this->authorize("update", $db);
+
+        $data = $request->validated();
+
+        $ruangan = Ruangan::query()->where("id", "=", $data["ruangan_id"])->first();
+        if (!$ruangan){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+
+        $req = $ruangan->requests()->whereDate("date", $data["date"])
+            ->where("id", "<>", $db->id)
+            ->where("status", "=", "accept")
+            ->where(function ($q) use ($data) {
+                $q->whereTime('start', '<', $data['end'])
+                    ->whereTime('end', '>', $data['start']);
+            })->count();
+
+        if ($req >= 1){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Request bentrok"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
+
+        if (Carbon::parse($data['date'])->lt(Carbon::today())){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Date not valid"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
+
+        $db->fill($data);
+        $db->save();
+        return new RequestResource($db);
+    }
+
+    public function getMy(string $id, Request $request): RequestCollection {
+        $this->authorize("create", Req::class);
+
+        $user = User::find($id);
         $status = $request->query("status");
 
         $query = $user->requests();
@@ -76,6 +137,48 @@ class RequestController extends Controller
         $request = $query->get();
 
         return new RequestCollection($request);
+    }
+
+    public function search(Request $request): RequestCollection {
+        $this->authorize("viewAny", Req::class);
+
+        $status = $request->query("status");
+        $date = $request->query("date");
+
+        $gedung = $request->query("gedung");
+        $ruangan = $request->query("ruangan");
+        $page = $request->input("page", 1);
+        $size = $request->input("size", 10);
+
+        $query = Req::query();
+
+        if ($status) {
+            $query->where("status", "=", $status);
+        }
+        if ($date) {
+            try {
+                $date = Carbon::parse($date)->format("Y-m-d");
+            }catch (\Exception){
+                $date = null;
+            }
+            if ($date != null){
+                $query->whereDate("date", "=", $date);
+            }
+        }
+
+        if ($ruangan){
+            $query->whereHas("ruangan", function ($q) use ($ruangan){
+                $q->where("name", "=" , $ruangan);
+            });
+        }
+        if ($gedung) {
+            $query->whereHas('ruangan.gedung', function ($q) use ($gedung) {
+                $q->where('name', $gedung);
+            });
+        }
+        $paginated = $query->paginate(perPage: $size, page: $page);
+
+        return new RequestCollection($paginated);
     }
 
     private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{

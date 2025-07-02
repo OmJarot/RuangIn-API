@@ -13,7 +13,7 @@ class RequestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->level == "admin";
     }
 
     /**
@@ -37,7 +37,7 @@ class RequestPolicy
      */
     public function update(User $user, request $request): bool
     {
-        return false;
+        return $user->id == $request->user_id;
     }
 
     /**
