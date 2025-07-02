@@ -15,10 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string("user_id",20)->nullable(false);
             $table->unsignedBigInteger("ruangan_id")->nullable(false);
-            $table->string("tittle", 200)->nullable(false);
+            $table->string("title", 200)->nullable(false);
             $table->text("description")->nullable();
-            $table->timestamp("start")->nullable(false);
-            $table->timestamp("end")->nullable(false);
+            $table->date("date")->nullable(false);
+            $table->time("start")->nullable(false);
+            $table->time("end")->nullable(false);
+            $table->string("status", 50)->nullable(false)->default("waiting");
             $table->foreign("user_id")->on("users")->references("id");
             $table->foreign("ruangan_id")->on("ruangans")->references("id");
             $table->softDeletes();

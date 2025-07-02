@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GedungController;
 use App\Http\Controllers\JurusanController;
+use App\Http\Controllers\RequestController;
 use App\Http\Controllers\RuanganController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -37,6 +38,8 @@ Route::middleware("auth")->group(function (){
     Route::delete("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "delete"]);
     Route::patch("/gedung/{gedungId}/ruangan/{ruanganId}", [RuanganController::class, "switchStatus"]);
     Route::get("/gedung/{gedungId}/ruangan", [RuanganController::class, "search"]);
+
+    Route::post("/gedung/{gedungId}/ruangan/{ruangId}/request", [RequestController::class, "request"]);
 });
 
 Route::post("/users/login", [UserController::class, "login"]);

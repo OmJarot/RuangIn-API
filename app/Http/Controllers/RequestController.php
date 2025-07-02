@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\CreateRequestRequest;
+use App\Http\Resources\RequestResource;
+use App\Models\Gedung;
+use App\Models\Ruangan;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Http\Request;
+use \App\Models\Request as Req;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+class RequestController extends Controller
+{
+    public function request(string $gedungId, string $ruangId, CreateRequestRequest $request): RequestResource {
+        $this->authorize("create", Req::class);
+        $gedung = $this->getGedung($gedungId);
+        $ruangan = $this->getRuangan($gedung, $ruangId);
+
+        $data = $request->validated();
+
+        $req = $ruangan->requests()
+            ->whereDate("date", $data["date"])
+            ->where("status", "=", "accept")
+            ->where(function ($q) use ($data) {
+                $q->whereTime('start', '<', $data['end'])
+                    ->whereTime('end', '>', $data['start']);
+            })
+            ->count();
+
+        if ($req >= 1){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Request bentrok"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
+
+        if (Carbon::parse($data['date'])->lt(Carbon::today())){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Date not valid"
+                    ]
+                ]
+            ])->setStatusCode(400));
+        }
+
+        $user = Auth::user();
+        $request = Req::query()->make($data);
+        $request->user_id = $user->id;
+        $request->ruangan_id = $ruangId;
+        $request->save();
+
+        return new RequestResource($request);
+    }
+
+    private function getRuangan(Gedung $gedung, string $ruanganId): Ruangan{
+        $ruangan = $gedung->ruangan()->find($ruanganId);
+        if (!$ruangan){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        return $ruangan;
+    }
+
+    private function getGedung(string $gedungId): Gedung {
+        $gedung = Gedung::find($gedungId);
+        if (!$gedung){
+            throw new HttpResponseException(response()->json([
+                "errors" => [
+                    "message" => [
+                        "Not found"
+                    ]
+                ]
+            ])->setStatusCode(404));
+        }
+        return $gedung;
+    }
+}

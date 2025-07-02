@@ -2,26 +2,26 @@
 
 namespace App\Policies;
 
-use App\Models\Jurusan;
 use App\Models\User;
+use App\Models\request;
 use Illuminate\Auth\Access\Response;
 
-class JurusanPolicy
+class RequestPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->level == "admin";
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Jurusan $jurusan): bool
+    public function view(User $user, request $request): bool
     {
-        return $user->level == "admin";
+        return true;
     }
 
     /**
@@ -29,21 +29,21 @@ class JurusanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->level == "admin";
+        return $user->level == "user";
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Jurusan $jurusan): bool
+    public function update(User $user, request $request): bool
     {
-        return $user->level == "admin";
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Jurusan $jurusan): bool
+    public function delete(User $user, request $request): bool
     {
         return $user->level == "admin";
     }
@@ -51,16 +51,16 @@ class JurusanPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Jurusan $jurusan): bool
+    public function restore(User $user, request $request): bool
     {
-        return $user->level == "admin";
+        return false;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Jurusan $jurusan): bool
+    public function forceDelete(User $user, request $request): bool
     {
-        return $user->level == "admin";
+        return false;
     }
 }
